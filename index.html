@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Tools Hub</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #0b1220;
+  color: white;
+}
+
+/* HEADER */
+header {
+  padding: 15px;
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  border-bottom: 1px solid #1e293b;
+}
+
+/* USER + COIN */
+.top-bar {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  background: #111827;
+  padding: 8px 15px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+}
+
+/* GRID */
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+/* CARD */
+.card {
+  background: #111827;
+  border: 1px solid #1e293b;
+  padding: 18px;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.card:hover {
+  border-color: #3b82f6;
+  transform: translateY(-3px);
+}
+
+/* TOOL BOX */
+.tool-box {
+  padding: 20px;
+  text-align: center;
+}
+
+input {
+  padding: 10px;
+  width: 80%;
+  border-radius: 8px;
+  border: 1px solid #1e293b;
+  background: #020617;
+  color: white;
+  margin: 10px;
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  margin: 5px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+#result {
+  margin-top: 15px;
+  font-size: 18px;
+  color: #22c55e;
+}
+</style>
+</head>
+
+<body>
+
+<header>🚀 AI Tools Hub</header>
+
+<div class="top-bar">
+👤 <span id="username"></span> | 🪙 <span id="coinCount">0</span>
+</div>
+
+<!-- LOGIN -->
+<div id="loginBox" style="text-align:center; margin-top:40px;">
+  <h2>Enter Username</h2>
+  <input id="userInput">
+  <br>
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- TOOLS -->
+<div class="container" id="app">
+
+  <!-- OLD 4 -->
+  <div class="card" onclick="showTool('bio')">Bio Generator</div>
+  <div class="card" onclick="showTool('title')">Title Generator</div>
+  <div class="card" onclick="showTool('love')">Love ❤️</div>
+  <div class="card" onclick="showTool('username')">Username</div>
+
+  <!-- NEW 7 -->
+  <div class="card" onclick="showTool('caption')">Caption</div>
+  <div class="card" onclick="showTool('hashtag')">Hashtag</div>
+  <div class="card" onclick="showTool('email')">Email</div>
+  <div class="card" onclick="showTool('story')">Story Idea</div>
+  <div class="card" onclick="showTool('motivation')">Motivation</div>
+  <div class="card" onclick="showTool('password')">Password</div>
+  <div class="card" onclick="showTool('joke')">Joke 😂</div>
+
+  <div class="card" onclick="buyCoins()">💳 Buy Coins</div>
+
+</div>
+
+<div class="tool-box" id="toolBox"></div>
+
+<script>
+
+/* LOGIN */
+let currentUser = localStorage.getItem("currentUser");
+
+function login(){
+  let user = document.getElementById("userInput").value;
+  if(!user) return alert("Enter name");
+
+  localStorage.setItem("currentUser", user);
+
+  if(!localStorage.getItem("coins_"+user)){
+    localStorage.setItem("coins_"+user, 5);
+  }
+
+  location.reload();
+}
+
+if(currentUser){
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("username").innerText=currentUser;
+}
+
+/* COINS */
+function getCoins(){
+  return parseInt(localStorage.getItem("coins_"+currentUser));
+}
+
+function setCoins(v){
+  localStorage.setItem("coins_"+currentUser, v);
+}
+
+function updateCoinsUI(){
+  document.getElementById("coinCount").innerText=getCoins();
+}
+
+if(currentUser) updateCoinsUI();
+
+/* TOOL UI */
+function showTool(tool){
+  document.getElementById("toolBox").innerHTML = `
+    <h2>${tool.toUpperCase()}</h2>
+    <input id="input" placeholder="Enter something">
+    <br>
+    <button onclick="generate('${tool}')">Generate</button>
+    <button onclick="watchAd()">🎥 Ad</button>
+    <button onclick="shareApp()">📤 Share</button>
+    <div id="result"></div>
+  `;
+}
+
+/* GENERATE */
+function generate(tool){
+  let coins = getCoins();
+
+  if(coins<=0){
+    alert("No coins!");
+    return;
+  }
+
+  coins--;
+  setCoins(coins);
+  updateCoinsUI();
+
+  const input = document.getElementById("input").value;
+
+  const outputs = {
+    bio: `🔥 ${input} | Dream big`,
+    title: `🔥 ${input} viral video`,
+    love: `${Math.floor(Math.random()*100)}% ❤️`,
+    username: `${input}_official`,
+    caption: `✨ ${input} vibes`,
+    hashtag: `#${input} #viral #trend`,
+    email: `Hello regarding ${input}`,
+    story: `Story idea about ${input}`,
+    motivation: `Never give up on ${input}`,
+    password: Math.random().toString(36).slice(-8),
+    joke: `😂 ${input} joke`
+  };
+
+  document.getElementById("result").innerText = outputs[tool];
+}
+
+/* EARN */
+function watchAd(){
+  let c = getCoins();
+  c++;
+  setCoins(c);
+  updateCoinsUI();
+  alert("+1 coin");
+}
+
+function shareApp(){
+  let c = getCoins();
+  c+=2;
+  setCoins(c);
+  updateCoinsUI();
+  alert("+2 coins");
+}
+
+/* BUY */
+function buyCoins(){
+  let opt = prompt("1=10 coins ₹10\n2=50 coins ₹30");
+
+  let c = getCoins();
+
+  if(opt=="1") c+=10;
+  else if(opt=="2") c+=50;
+  else return;
+
+  setCoins(c);
+  updateCoinsUI();
+
+  alert("Coins added (demo)");
+}
+
+</script>
+
+</body>
+</html>
